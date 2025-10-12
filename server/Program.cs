@@ -1,3 +1,4 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using ModelContextProtocol.AspNetCore.Authentication;
 using ModelContextProtocol.Server;
 using server.Tools;
@@ -21,14 +22,13 @@ builder.Services.AddMcpServer()
     .WithHttpTransport()
     .WithTools<SpotifyTools>();
 
-// add telemetry after deployment
-// configure OpenTelemetry
-// builder.Services.AddOpenTelemetry().UseAzureMonitor();
-
 builder.Services.AddHttpClient("SpotifyApi", client =>
 {
     client.BaseAddress = new Uri("https://api.spotify.com/");
 });
+
+// configure OpenTelemetry
+builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
 var app = builder.Build();
 
