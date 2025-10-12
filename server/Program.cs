@@ -60,7 +60,7 @@ builder.Services.AddAuthentication(options =>
     {
         Resource = new Uri(serverUrl),
         AuthorizationServers = { new Uri(authority) },
-        ScopesSupported = { "my-mcp-server" }
+        ScopesSupported = { "openid", "profile", "email", "mcp:tools" }
     };
 });
 
