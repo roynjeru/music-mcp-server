@@ -1,4 +1,5 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ModelContextProtocol.AspNetCore.Authentication;
 using ModelContextProtocol.Server;
 using server.Tools;
@@ -9,12 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Logging.AddConsole();
+var authority = builder.Configuration["jwt-authority"];
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultChallengeScheme = McpAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = McpAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = authority;
+    options.TokenValidationParameters = new()
+    {
+        ValidAudience = "my-mcp-server",
+        ValidateAudience = true,
+        ValidateIssuer = true
+    };
 });
+
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
