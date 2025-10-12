@@ -9,6 +9,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "APPLICATIONINSIGHTS_CONNECTION_STRING": "",
+        "serverUrl": "https://localhost:7226"
       }
     }
   }

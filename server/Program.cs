@@ -11,24 +11,66 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Logging.AddConsole();
 var authority = builder.Configuration["jwt-authority"];
+var serverUrl = builder.Configuration["serverUrl"];
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultChallengeScheme = McpAuthenticationDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.Authority = authority;
     options.TokenValidationParameters = new()
     {
-        ValidAudience = "my-mcp-server",
         ValidateAudience = true,
-        ValidateIssuer = true
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = "my-mcp-server",
+        ValidIssuer = authority
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            // Additional custom validation can be done here if needed
+            Console.WriteLine("Token validated successfully.");
+            Console.WriteLine($"Context: {context.SecurityToken}");
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            // Log the exception or handle it as needed
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            // Handle the challenge response if needed
+            Console.WriteLine("OnChallenge error: " + context.Error);
+            return Task.CompletedTask;
+        }
+    };
+})
+.AddMcp(options =>
+{
+    options.ResourceMetadata = new()
+    {
+        Resource = new Uri(serverUrl),
+        AuthorizationServers = { new Uri(authority) },
+        ScopesSupported = { "my-mcp-server" }
     };
 });
 
+
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddOpenApi();
+builder.Services.AddAntiforgery();
 
 builder.Services.AddMcpServer()
     .WithHttpTransport()
@@ -44,23 +86,22 @@ builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
 var app = builder.Build();
 
+app.UseRouting();
+app.UseAuthorization();
+app.UseAntiforgery();
+app.UseEndpoints(_ =>{});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-// only redirect to HTTPS in non-development environments so local HTTP POSTs
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
+app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapMcp();
+app.MapMcp().RequireAuthorization();
 
 app.Run();

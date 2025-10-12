@@ -1,0 +1,12 @@
+@httpsAddress = https://localhost:7226
+@httpAddress = http://localhost:5155
+
+###
+# @name PostHome
+POST {{httpAddress}}
+Accept: application/json, text/event-stream
+Content-Type: application/json
+
+
+###
+# @name 
