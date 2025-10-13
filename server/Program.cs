@@ -87,7 +87,13 @@ builder.Services.AddOpenTelemetry().UseAzureMonitor();
 var app = builder.Build();
 
 app.UseRouting();
+
+// 1) Authenticate first
+app.UseAuthentication();
+
+// 2) Then authorize
 app.UseAuthorization();
+
 app.UseAntiforgery();
 app.UseEndpoints(_ =>{});
 
@@ -97,8 +103,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 
 app.MapControllers();
 
