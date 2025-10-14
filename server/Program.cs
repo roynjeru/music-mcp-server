@@ -81,6 +81,11 @@ builder.Services.AddHttpClient("SpotifyApi", client =>
     client.BaseAddress = new Uri("https://api.spotify.com/");
 });
 
+builder.Services.AddHttpClient("OAuthServer", client =>
+{
+    client.BaseAddress = new Uri(authority);
+});
+
 // configure OpenTelemetry
 builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
