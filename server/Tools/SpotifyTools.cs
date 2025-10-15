@@ -39,11 +39,12 @@ namespace server.Tools
 
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
-            _logger.LogWarning("No valid Authorization header found. {authHeader}", authHeader);
-            throw new UnauthorizedAccessException("No valid Authorization header found.");
+                _logger.LogWarning("No valid Authorization header found. {authHeader}", authHeader);
+                throw new UnauthorizedAccessException("No valid Authorization header found.");
             }
 
             var token = authHeader.Substring("Bearer ".Length).Trim();
+            
             oauthClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Exchange token if needed (as in your original code)
