@@ -18,6 +18,9 @@ Configuration
 	- `jwt-authority` — the authority/issuer URL for incoming JWTs (the OAuth server or identity provider).
 	- `serverUrl` — a public URL for the MCP resource metadata (used when registering MCP resource metadata).
 
+## Usage in ChatGPT
+![example ](./server/example%20images/search%20response.png)
+
 Quick start (macOS / zsh)
 
 1. Restore and build
