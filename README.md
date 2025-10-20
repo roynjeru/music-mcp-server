@@ -10,7 +10,7 @@ Key points
 - Token exchange: forwards the incoming bearer token to a specialized OAuth server (see link below) to exchange/validate for a Spotify access token, then calls Spotify using a per-request Authorization header.
 
 Specialized OAuth server
-- This project is designed to work with a companion OAuth server that you authored: https://github.com/roynjeru/oauth-music-streaming-mcp-server
+- This project is designed to work with a companion OAuth server: https://github.com/roynjeru/oauth-music-streaming-mcp-server
 - That OAuth server performs token exchange/validation and exposes an endpoint (used by this server) to exchange an incoming token for a Spotify access token.
 
 Configuration
